@@ -43,16 +43,23 @@ fi
 function favourites() {
 	echo 'Installing favourite packages. Root required:'
 
+	common="synaptic openssh-server filezilla chromium-browser deluge geeqie inkscape ssh git whois rar htop";
+	ubuntu="nautilus-dropbox ubuntu-restricted-extras nautilus-open-terminal"
+	linuxmint="ia32-libs nemo-dropbox"
+
 	if [[ ${OS} == "Ubuntu" }]]; then
-		sudo apt-get install -y synaptic openssh-server filezilla chromium-browser deluge geeqie inkscape ssh git ia32-libs whois rar nautilus-dropbox ubuntu-restricted-extras nautilus-open-terminal
+		common="$common $ubuntu"
 	elif [[ ${OS} == "LinuxMint" ]]; then
-		sudo apt-get install -y synaptic openssh-server filezilla chromium-browser deluge geeqie inkscape ssh git ia32-libs whois rar nemo-dropbox 
+		common="$common $linuxmint"
 	fi
 
-	has_nvidia=`lspci | grep NVIDIA`
-	if [[ has_nvidia != "" ]]; then
-		sudo apt-get install -y bumblebee-nvidia primus
+	has_nvidia=$(lspci | grep NVIDIA)
+	if [[ ${has_nvidia} != "" ]]; then
+		common="$common bumblebee-nvidia primus"
 	fi
+	
+	sudo apt-get install -y  "$common"
+	
 	main
 }
 

@@ -3,22 +3,43 @@
 # This scripts gets all other scripts needed for installing my base debian system
 #
 
-die () { echo >&2 "$@"; exit 1 }
+function die () {
+	echo >&2 "$@"
+	exit 1
+}
+
+function download() {
+	url="https://raw.githubusercontent.com/oizo/deb-post-install/master/$1"
+	success=$(wget -q $url)
+	if [[ success -ne 0 ]]; then
+		die "Failed to get $url, exiting..."
+	else
+		echo "Download $1... success"
+	fi
+}
 
 cd $HOME
 bin_dir="bin"
 if [[ ! -e ${bin_dir} ]]; then
 	mkdir -p ${bin_dir}
-	cd ${bin_dir}
 elif [[ ! -d ${bin_dir} ]]; then
 	die "${bin_dir} is not a directory."
 fi
 
-echo "Downloading scripts..."
+cd ${bin_dir}
 
-wget https://github.com/oizo/deb-post-install/blob/master/post-install-deb.sh
-wget https://github.com/oizo/deb-post-install/blob/master/post-install-eee.sh
-wget https://github.com/oizo/deb-post-install/blob/master/sshmount.sh
+declare -a scripts=('post-install-deb.sh' 'post-install-eee.sh' 'sshmount.sh');
 
-echo "Done"
+echo "Downloading: ${scripts[@]}"
 
+for script in "${scripts[@]}"; do
+	download $script
+done
+
+for script in "${scripts[@]}"; do
+	sudo chmod a+x $script
+done
+
+PATH="$HOME/${bin_dir}:$PATH"
+
+echo "Done, scripts are located in $HOME/$bin_dir"
