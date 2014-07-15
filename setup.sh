@@ -13,8 +13,6 @@ function download() {
 	success=$(wget -q $url)
 	if [[ success -ne 0 ]]; then
 		die "Failed to get $url, exiting..."
-	else
-		echo "Download $1... success"
 	fi
 }
 
